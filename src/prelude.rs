@@ -1,11 +1,10 @@
 use std::collections::{HashSet, BTreeSet};
 use eq_float::F64;
 
-use crate::Error;
-
 /// Marker trait used by `choose_rand`.
 /// Allows function to accept either type of set.
 pub trait Set: IntoIterator<Item = <Self as Set>::Item> {
+    /// The type of item in the Set
     type Item;
 }
 
@@ -19,16 +18,16 @@ impl<'a, P: Probable> Set for &'a BTreeSet<P> {
 /// Required for `chooe_rand` to work.
 /// Use on any items to be chosen.
 pub trait Probable: Clone {
+    /// The probability that this item will be picked.
     fn probability(&self) -> F64;
 }
 
 /// Pick a random item from the set,
 /// weighed by `item.probability()`
 pub fn choose_rand<T, S>(s: &S) -> Result<T, Error>
-where 
+where
     T: Probable,
-    for<'a> &'a
-    S: Set<Item = &'a T>
+    for<'a> &'a S: Set<Item = &'a T>,
 {
     let r = F64(fastrand::f64());
 

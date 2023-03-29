@@ -1,5 +1,7 @@
 //! A small crate for weighed choosing from a set.
 
+#[warn(missing_docs)]
+
 /// Contains all of the important things from this crate.
 /// When using the crate, you want to do `use choose_rand::prelude::*;`
 pub mod prelude;
