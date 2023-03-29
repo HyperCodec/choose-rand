@@ -25,7 +25,8 @@ pub trait Probable: Clone {
 }
 
 /// Pick a random item from the set,
-/// weighed by `item.probability()`
+/// weighed by `item.probability()`.
+/// The set can be either a HashSet or a BTreeSet.
 pub fn choose_rand<T, S>(s: &S) -> Result<T, Error>
 where
     T: Probable,
