@@ -1,5 +1,5 @@
-use std::collections::{HashSet, BTreeSet};
 use crate::Error;
+use std::collections::{BTreeSet, HashSet};
 
 /// Marker trait used by `choose_rand`.
 /// Allows function to accept either type of set.
@@ -23,10 +23,9 @@ pub trait Probable: Clone {
 /// Pick a random item from the set,
 /// weighed by `item.probability()`
 pub fn choose_rand<T, S>(s: &S) -> Result<T, Error>
-where 
+where
     T: Probable,
-    for<'a> &'a
-    S: Set<Item = &'a T>
+    for<'a> &'a S: Set<Item = &'a T>,
 {
     let r = fastrand::f64();
 
