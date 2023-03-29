@@ -27,7 +27,7 @@ pub trait Probable: Clone {
 /// Pick a random item from the set,
 /// weighed by `item.probability()`.
 /// The set can be either a HashSet or a BTreeSet
-pub trait RandChoosable<P: Probable>: Set<Item = P> {
+pub trait RandChoosable<P: Probable>: Set<Item = P> + IntoIterator<Item = P> {
     fn choose_rand(&self) -> Result<P, Error> {
         let r = F64(fastrand::f64());
 
