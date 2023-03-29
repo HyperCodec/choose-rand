@@ -2,6 +2,14 @@
 name = "choose-rand"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+readme = "README.md"
+authors = ["HyperCodec"]
+homepage = "https://github.com/HyperCodec/choose-rand"
+repository = "https://github.com/HyperCodec/choose-rand"
+description = "A small crate for choosing random items from a set of weighed items."
+keywords = ["random", "rng"]
+categories = ["random"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

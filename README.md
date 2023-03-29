@@ -72,3 +72,6 @@ fn main() {
     println!("The chosen one is: {:#?}", chosen);
 }
 ```
+
+### License
+This library is licensed under the `MIT` license.
