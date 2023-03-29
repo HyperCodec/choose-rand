@@ -1,4 +1,6 @@
 use std::collections::{HashSet, BTreeSet};
+use eq_float::F64;
+
 use crate::Error;
 
 /// Marker trait used by `choose_rand`.
@@ -17,7 +19,7 @@ impl<'a, P: Probable> Set for &'a BTreeSet<P> {
 /// Required for `chooe_rand` to work.
 /// Use on any items to be chosen.
 pub trait Probable: Clone {
-    fn probability(&self) -> f64;
+    fn probability(&self) -> F64;
 }
 
 /// Pick a random item from the set,
@@ -28,13 +30,13 @@ where
     for<'a> &'a
     S: Set<Item = &'a T>
 {
-    let r = fastrand::f64();
+    let r = F64(fastrand::f64());
 
-    let mut last = 0.;
+    let mut last = F64(0.);
     for choice in s {
         let p = choice.probability();
 
-        let newlast = last + p;
+        let newlast = F64(last.0 + p.0);
 
         if (last..newlast).contains(&r) {
             return Ok(choice.clone());
