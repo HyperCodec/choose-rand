@@ -1,6 +1,8 @@
 use std::collections::{HashSet, BTreeSet};
 use eq_float::F64;
 
+use crate::Error;
+
 /// Marker trait used by `choose_rand`.
 /// Allows function to accept either type of set.
 pub trait Set: IntoIterator<Item = <Self as Set>::Item> {
