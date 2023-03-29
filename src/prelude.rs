@@ -26,26 +26,30 @@ pub trait Probable: Clone {
 
 /// Pick a random item from the set,
 /// weighed by `item.probability()`.
-/// The set can be either a HashSet or a BTreeSet.
-pub fn choose_rand<T, S>(s: &S) -> Result<T, Error>
-where
-    T: Probable,
-    for<'a> &'a S: Set<Item = &'a T>,
-{
-    let r = F64(fastrand::f64());
+/// The set can be either a HashSet or a BTreeSet
+pub trait RandChoosable<P: Probable>: Set<Item = P> {
+    fn choose_rand(&self) -> Result<P, Error> {
+        let r = F64(fastrand::f64());
 
-    let mut last = F64(0.);
-    for choice in s {
-        let p = choice.probability();
+        let mut last = F64(0.);
+        for choice in self {
+            let p = choice.probability();
 
-        let newlast = F64(last.0 + p.0);
+            let newlast = F64(last.0 + p.0);
 
-        if (last..newlast).contains(&r) {
-            return Ok(choice.clone());
+            if (last..newlast).contains(&r) {
+                return Ok(choice.clone());
+            }
+
+            last = newlast;
         }
 
-        last = newlast;
-    }
-
-    Err(Error("Probabilities must add up to 1".to_string()))
+        Err(Error("Probabilities must add up to 1".to_string()))
+    }   
 }
+
+impl<T, P> RandChoosable for T
+where
+    T: Set<Item = P>
+    P: Probable
+{}
