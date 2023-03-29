@@ -22,6 +22,8 @@ impl fmt::Display for Error {
 mod tests {
     use std::collections::HashSet;
 
+    use eq_float::F64;
+
     use super::prelude::*;
 
     #[derive(Hash, Eq, PartialEq, Clone, Debug)]
@@ -33,12 +35,12 @@ mod tests {
     }
 
     impl Probable for Thing {
-        fn probability(&self) -> f64 {
+        fn probability(&self) -> F64 {
             match self {
-                Thing::A => 0.15,
-                Thing::B => 0.35,
-                Thing::C => 0.45,
-                Thing::D => 0.05,
+                Thing::A => F64(0.15),
+                Thing::B => F64(0.35),
+                Thing::C => F64(0.45),
+                Thing::D => F64(0.05),
             }
         }
     }

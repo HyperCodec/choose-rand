@@ -1,5 +1,5 @@
-use crate::Error;
-use std::collections::{BTreeSet, HashSet};
+use std::collections::{HashSet, BTreeSet};
+use eq_float::F64;
 
 /// Marker trait used by `choose_rand`.
 /// Allows function to accept either type of set.
@@ -19,7 +19,7 @@ impl<'a, P: Probable> Set for &'a BTreeSet<P> {
 /// Use on any items to be chosen.
 pub trait Probable: Clone {
     /// The probability that this item will be picked.
-    fn probability(&self) -> f64;
+    fn probability(&self) -> F64;
 }
 
 /// Pick a random item from the set,
@@ -29,13 +29,13 @@ where
     T: Probable,
     for<'a> &'a S: Set<Item = &'a T>,
 {
-    let r = fastrand::f64();
+    let r = F64(fastrand::f64());
 
-    let mut last = 0.;
+    let mut last = F64(0.);
     for choice in s {
         let p = choice.probability();
 
-        let newlast = last + p;
+        let newlast = F64(last.0 + p.0);
 
         if (last..newlast).contains(&r) {
             return Ok(choice.clone());
