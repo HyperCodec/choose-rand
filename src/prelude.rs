@@ -4,6 +4,7 @@ use std::collections::{BTreeSet, HashSet};
 /// Marker trait used by `choose_rand`.
 /// Allows function to accept either type of set.
 pub trait Set: IntoIterator<Item = <Self as Set>::Item> {
+    /// The type of item in the Set
     type Item;
 }
 
@@ -17,6 +18,7 @@ impl<'a, P: Probable> Set for &'a BTreeSet<P> {
 /// Required for `chooe_rand` to work.
 /// Use on any items to be chosen.
 pub trait Probable: Clone {
+    /// The probability that this item will be picked.
     fn probability(&self) -> f64;
 }
 
