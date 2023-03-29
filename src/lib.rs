@@ -135,7 +135,7 @@ mod tests {
             Thing::D
         ]);
 
-        let chosen = choose_rand(&selection).unwrap();
+        let chosen = selection.choose_rand().unwrap();
 
         println!("The chosen one is: {:?}", chosen);
     }
@@ -149,7 +149,7 @@ mod tests {
             Thing2(F64(0.05))
         ]);
 
-        let chosen = choose_rand(&selection).unwrap();
+        let chosen = selection.choose_rand().unwrap();
 
         println!("The chosen one is: {:?}", chosen);
     }
