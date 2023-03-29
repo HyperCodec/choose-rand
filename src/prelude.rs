@@ -48,7 +48,7 @@ pub trait RandChoosable<P: Probable>: Set<Item = P> {
     }   
 }
 
-impl<T, P> RandChoosable for T
+impl<T, P> RandChoosable<P> for T
 where
     T: Set<Item = P>,
     P: Probable
