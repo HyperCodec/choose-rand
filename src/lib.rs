@@ -41,17 +41,37 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test() {
-        let mut selection = HashSet::new();
+    #[derive(Hash, Eq, PartialEq, Clone, Debug)]
+    struct Thing2(F64);
 
-        {
-            let original = [Thing::A, Thing::B, Thing::C, Thing::D];
-
-            for o in original {
-                selection.insert(o);
-            }
+    impl Probable for Thing2 {
+        fn probability(&self) -> F64 {
+            self.0
         }
+    }
+
+    #[test]
+    fn test_enum() {
+        let selection = HashSet::from([
+            Thing::A, 
+            Thing::B, 
+            Thing::C, 
+            Thing::D
+        ]);
+
+        let chosen = choose_rand(&selection).unwrap();
+
+        println!("The chosen one is: {:?}", chosen);
+    }
+
+    #[test]
+    fn test_struct() {
+        let selection = HashSet::from([
+            Thing2(F64(0.15)),
+            Thing2(F64(0.35)),
+            Thing2(F64(0.45)),
+            Thing2(F64(0.05))
+        ]);
 
         let chosen = choose_rand(&selection).unwrap();
 
