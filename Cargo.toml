@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 fastrand = "1.6"
+eq-float = "0.1"
