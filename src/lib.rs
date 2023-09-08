@@ -78,17 +78,9 @@
 /// When using the crate, you want to do `use choose_rand::prelude::*;`
 pub mod prelude;
 
+pub mod rand;
+
 use std::fmt;
-
-/// Simple Error struct that has a String value for whatever reason it errored.
-#[derive(Debug, Clone)]
-pub struct Error(String);
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Error: {}", self.0)
-    }
-}
 
 #[cfg(test)]
 mod tests {
