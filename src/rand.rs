@@ -1,46 +1,44 @@
+use weighted_rand::builder::*;
+use rand::Rng;
+
 /// Marker trait used by `choose_rand`.
 /// Allows function to accept either type of set.
-pub trait Set: IntoIterator<Item = <Self as Set>::Item> {
+pub trait ProbabilityGroup: IntoIterator<Item = <Self as ProbabilityGroup>::Item> + std::ops::Index {
     /// The type of item in the Set
     type Item;
+
+    fn choose_rand<T>(&self, rng: &mut impl Rng) -> Result<T>
+    where
+        T: Probable + Clone, // TODO remove clone functionality and do it with refcell or something
+    {
+        let weights: Vec<f64> = self.into_iter()
+            .map(|p| p.probability())
+            .collect();
+
+        if weights.iter().sum() != 1. {
+            return Err(Error("Individual probabilities must add up to 1"));
+        }
+
+        let wt = WalkerTableBuilder::new(&weights)
+            .build();
+        
+        let i = wt.next_rng(rng);
+
+        self[i].clone()
+    }
 }
 
-impl<'a, P: Probable> Set for &'a HashSet<P> {
-    type Item = &'a P;
-}
-impl<'a, P: Probable> Set for &'a BTreeSet<P> {
-    type Item = &'a P;
+impl<T> ProbabilityGroup for T
+where
+    T: IntoIterator<Item = <Self as ProbabilityGroup>::Item> + std::ops::Index
+{
+    
 }
 
 /// Required for `chooe_rand` to work.
 /// Use on any items to be chosen.
 pub trait Probable {
     /// The probability that this item will be picked.
-    fn probability(&self) -> F64;
+    fn probability(&self) -> f64;
 }
 
-/// Pick a random item from the set,
-/// weighed by `item.probability()`.
-/// The set can be either a HashSet or a BTreeSet.
-pub fn choose_rand<T, S>(s: &S) -> Result<T>
-where
-    T: Probable,
-    for<'a> &'a S: Set<Item = &'a T>,
-{
-    let r = F64(fastrand::f64());
-
-    let mut last = F64(0.);
-    for choice in s {
-        let p = choice.probability();
-
-        let newlast = F64(last.0 + p.0);
-
-        if (last..newlast).contains(&r) {
-            return Ok(choice.clone());
-        }
-
-        last = newlast;
-    }
-
-    Err(Error("Probabilities must add up to 1".to_string()))
-}
