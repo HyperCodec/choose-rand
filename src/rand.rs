@@ -8,10 +8,7 @@ pub trait ProbabilityGroup: IntoIterator<Item = RefCell<<Self as ProbabilityGrou
     /// The type of item in the Set
     type Item;
 
-    fn choose_rand(&self, rng: &mut impl Rng) -> Result<Ref<Self::Item>>
-    where
-        T: Probable + Clone, // TODO remove clone functionality and do it with refcell or something
-    {
+    fn choose_rand(&self, rng: &mut impl Rng) -> Result<Ref<Self::Item>> {
         let weights: Vec<f64> = self.into_iter()
             .map(|p| p.probability())
             .collect();
@@ -28,10 +25,7 @@ pub trait ProbabilityGroup: IntoIterator<Item = RefCell<<Self as ProbabilityGrou
         Ok(self[i].borrow())
     }
 
-    fn choose_rand_mut(&mut self, rng: &mut impl Rng) -> Result<RefMut<Self::Item>>
-    where
-        T: Probable + Clone, // TODO remove clone functionality and do it with refcell or something
-    {
+    fn choose_rand_mut(&mut self, rng: &mut impl Rng) -> Result<RefMut<Self::Item>> {
         let weights: Vec<f64> = self.into_iter()
             .map(|p| p.probability())
             .collect();
