@@ -1,20 +1,20 @@
 use weighted_rand::builder::*;
 use rand::Rng;
-use std::cell::RefCell;
+use std::cell::{RefCell, Ref, RefMut};
+use crate::prelude::*;
 
-/// Marker trait used by `choose_rand`.
-/// Allows function to accept either type of set.
-pub trait ChooseRand: IntoIterator<Item = RefCell<<Self as ChooseRand>::Item>> + std::ops::Index {
+/// epic trait
+pub trait ChooseRand: IntoIterator<Item = RefCell<<Self as ChooseRand>::Item>> + std::ops::Index<usize, Output = RefCell<<Self as ChooseRand>::Item>> + Sized + Clone {
     /// The type of item in the Set
-    type Item;
+    type Item: Probable;
 
     fn choose_rand(&self, rng: &mut impl Rng) -> Result<Ref<<Self as ChooseRand>::Item>> {
-        let weights: Vec<f64> = self.into_iter()
-            .map(|p| p.probability())
+        let weights: Vec<_> = self.clone().into_iter() // TODO remove to make more efficient
+            .map(|p| p.borrow().probability())
             .collect();
 
-        if weights.iter().sum() != 1. {
-            return Err(Error("Individual probabilities must add up to 1"));
+        if weights.iter().sum::<f32>() != 1. {
+            return Err(Error::ProbabilitySum);
         }
 
         let wt = WalkerTableBuilder::new(&weights)
@@ -26,12 +26,12 @@ pub trait ChooseRand: IntoIterator<Item = RefCell<<Self as ChooseRand>::Item>> +
     }
 
     fn choose_rand_mut(&mut self, rng: &mut impl Rng) -> Result<RefMut<<Self as ChooseRand>::Item>> {
-        let weights: Vec<f64> = self.into_iter()
-            .map(|p| p.probability())
+        let weights: Vec<_> = self.clone().into_iter()
+            .map(|p| p.borrow().probability())
             .collect();
 
-        if weights.iter().sum() != 1. {
-            return Err(Error("Individual probabilities must add up to 1"));
+        if weights.iter().sum::<f32>() != 1. {
+            return Err(Error::ProbabilitySum);
         }
 
         let wt = WalkerTableBuilder::new(&weights)
@@ -43,17 +43,18 @@ pub trait ChooseRand: IntoIterator<Item = RefCell<<Self as ChooseRand>::Item>> +
     }
 }
 
-impl<T> ChooseRand for T
+impl<T, V> ChooseRand for T
 where
-    T: IntoIterator<Item = <Self as ChooseRand>::Item> + std::ops::Index
+    T: IntoIterator<Item = RefCell<V>> + std::ops::Index<usize, Output = RefCell<V>> + Sized + Clone,
+    V: Probable,
 {
-
+    type Item = V;
 }
 
 /// Required for `chooe_rand` to work.
 /// Use on any items to be chosen.
 pub trait Probable {
     /// The probability that this item will be picked.
-    fn probability(&self) -> f64;
+    fn probability(&self) -> f32;
 }
 

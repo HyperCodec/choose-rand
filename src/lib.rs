@@ -1,148 +1,75 @@
-//! A small crate for choosing random items from a set of weighed items.
-//! 
-//! ### Installation/Setup
-//! To import the crate into your project, simply run `cargo add choose-rand` or open your Cargo.toml and add `choose-rand = "<latest release>"`
-//! 
-//! In any file that you want to use the crate, add `use choose_rand::prelude::*;` and `use eq_float::F64;` (the eq_float part is for when you need to `impl Probable`)
-//! 
-//! ### Examples
-//! 1. Enum
-//! ```rust
-//! use choose_rand::prelude::*;
-//! use eq_float::F64;
-//! 
-//! #[derive(Hash, Eq, PartialEq, Clone, Debug)]
-//! enum Test {
-//!     foo,
-//!     bar,
-//!     buz
-//! }
-//! 
-//! impl Probable for Test {
-//!     fn probability(&self) -> F64 {
-//!         match self {
-//!             Test::foo => F64(0.1),
-//!             Test::bar => F64(0.2),
-//!             Test::buz => F64(0.7)
-//!         }
-//!     }
-//! }
-//! 
-//! fn main() {
-//!     // all probabilities must add up to 1 or else it will (sometimes) fail.
-//!     // it also works with BTreeSet
-//!     let things = HashSet::from([
-//!         Test::foo,
-//!         Test::bar, 
-//!         Test::buz
-//!     ]);
-//!     
-//!     let chosen = choose_rand(&things).unwrap();
-//! 
-//!     println!("The chosen one is: {:#?}", chosen);
-//! }
-//! ```
-//! 
-//! 2. Struct
-//! ```rust
-//! use choose_rand::prelude::*;
-//! use eq_float::F64;
-//! 
-//! #[derive(Hash, Eq, PartialEq, Clone, Debug)]
-//! struct Test(F64);
-//! 
-//! impl Probable for Test {
-//!     fn probability(&self) -> F64 {
-//!         self.0
-//!     }
-//! }
-//! 
-//! fn main() {
-//!     // all probabilities must add up to 1 or else it will (sometimes) fail.
-//!     // it also works with BTreeSet
-//!     let things = HashSet::from([
-//!         Test(F64(0.1)),
-//!         Test(F64(0.2)),
-//!         Test(F64(0.7))
-//!     ]);
-//! 
-//!     let chosen = choose_rand(&things).unwrap();
-//! 
-//!     println!("The chosen one is: {:#?}", chosen);
-//! }
-//! ```
 
 #[warn(missing_docs)]
 
 /// Contains all of the important things from this crate.
 /// When using the crate, you want to do `use choose_rand::prelude::*;`
 pub mod prelude;
-
 pub mod rand;
-
-use std::fmt;
+pub mod error;
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
-    use eq_float::F64;
+    use std::cell::RefCell;
 
     use super::prelude::*;
+    //use std::collections::{HashSet, BTreeSet};
 
-    #[derive(Hash, Eq, PartialEq, Clone, Debug)]
-    enum Thing {
-        A,
-        B,
-        C,
-        D,
-    }
+    #[derive(Debug, Clone)]
+    struct Foo(f32, Option<String>);
 
-    impl Probable for Thing {
-        fn probability(&self) -> F64 {
-            match self {
-                Thing::A => F64(0.15),
-                Thing::B => F64(0.35),
-                Thing::C => F64(0.45),
-                Thing::D => F64(0.05),
-            }
-        }
-    }
-
-    #[derive(Hash, Eq, PartialEq, Clone, Debug)]
-    struct Thing2(F64);
-
-    impl Probable for Thing2 {
-        fn probability(&self) -> F64 {
+    impl Probable for Foo {
+        fn probability(&self) -> f32 {
             self.0
         }
     }
-
-    #[test]
-    fn test_enum() {
-        let selection = HashSet::from([
-            Thing::A, 
-            Thing::B, 
-            Thing::C, 
-            Thing::D
-        ]);
-
-        let chosen = choose_rand(&selection).unwrap();
-
-        println!("The chosen one is: {:?}", chosen);
+    
+    fn refcellify<T, C: Iterator<Item = T>>(c: C) -> impl Iterator<Item = RefCell<T>> {
+        c.map(|i| RefCell::new(i))
     }
 
     #[test]
-    fn test_struct() {
-        let selection = HashSet::from([
-            Thing2(F64(0.15)),
-            Thing2(F64(0.35)),
-            Thing2(F64(0.45)),
-            Thing2(F64(0.05))
-        ]);
+    fn vec() -> Result<()> {
+        let v: Vec<_> = refcellify(
+            vec![Foo(0.1, None), Foo(0.25, None), Foo(0.5, None), Foo(0.15, None)]
+            .into_iter()
+        ).collect();
 
-        let chosen = choose_rand(&selection).unwrap();
+        let mut chosen = Vec::with_capacity(100);
 
-        println!("The chosen one is: {:?}", chosen);
+        let mut rng = rand::thread_rng();
+
+        for _ in 0 .. 100 {
+            chosen.push(v.choose_rand(&mut rng)?);
+        }
+
+        dbg!(chosen);
+
+        Ok(())
+    }
+
+    #[test]
+    fn vec_mut() -> Result<()> {
+        let mut v: Vec<_> = refcellify(
+            vec![Foo(0.1, Some("hi".into())), Foo(0.25, Some("hello".into())), Foo(0.5, Some("hola".into())), Foo(0.15, Some("bonjour".into()))]
+            .into_iter()
+        ).collect();
+
+        let mut rng = rand::thread_rng();
+
+        let mut chosen = Vec::with_capacity(100);
+
+        for _ in 0 .. 100 {
+            let mut c = v.choose_rand_mut(&mut rng)?;
+
+            if let Some(s) = &mut c.1 {
+                s.push('!');
+            }
+
+            chosen.push(c.clone()); // cloned so we can see each version of it. without clone, all copies of it should change in `chosen`
+        }
+
+        dbg!(chosen, v);
+
+        Ok(())
     }
 }
