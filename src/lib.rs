@@ -62,7 +62,6 @@ mod tests {
     fn vec() -> Result<()> {
         let v: Vec<_> = refcellify(
             vec![Foo(0.1, None), Foo(0.25, None), Foo(0.5, None), Foo(0.15, None)]
-            .into_iter()
         ).collect();
 
         let mut chosen = Vec::with_capacity(100);
