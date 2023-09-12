@@ -3,13 +3,14 @@ use rand::Rng;
 use std::cell::{RefCell, Ref, RefMut};
 use crate::prelude::*;
 
-/// epic trait
+/// Blanket trait for all indexable collections that contain RefCells of Probable items. Adds `choose_rand` and `choose_rand_mut`.
 pub trait ChooseRand: IntoIterator<Item = RefCell<<Self as ChooseRand>::Item>> + std::ops::Index<usize, Output = RefCell<<Self as ChooseRand>::Item>> + Sized + Clone {
     /// The type of item in the Set
     type Item: Probable;
 
+    /// Choose a random item from the collection based on probability. Will return error if collection probabilities do not add up to 1.
     fn choose_rand(&self, rng: &mut impl Rng) -> Result<Ref<<Self as ChooseRand>::Item>> {
-        let weights: Vec<_> = self.clone().into_iter() // TODO remove to make more efficient
+        let weights: Vec<_> = self.clone().into_iter() // TODO remove clones to make more efficient
             .map(|p| p.borrow().probability())
             .collect();
 
@@ -25,6 +26,7 @@ pub trait ChooseRand: IntoIterator<Item = RefCell<<Self as ChooseRand>::Item>> +
         Ok(self[i].borrow())
     }
 
+    /// Same as `choose_rand`, but it returns a RefMut so that the original item can be mutated.
     fn choose_rand_mut(&mut self, rng: &mut impl Rng) -> Result<RefMut<<Self as ChooseRand>::Item>> {
         let weights: Vec<_> = self.clone().into_iter()
             .map(|p| p.borrow().probability())

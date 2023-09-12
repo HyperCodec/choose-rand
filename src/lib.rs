@@ -1,18 +1,53 @@
+//! # choose-rand
+//! A small crate for choosing random items from a list of weighted items.
+//! 
+//! ### Example
+//! ```rust
+//! use choose_rand::prelude::*;
+//! 
+//! #[derive(Debug, Clone)]
+//! struct Foo {
+//!     prob: f32,
+//! }
+//! 
+//! impl Probable for Foo {
+//!     fn probability(&self) -> f32 {
+//!         self.prob
+//!     }
+//! }
+//! 
+//! fn main() -> Result<()> {
+//!     let v: Vec<_> = choose_rand::helper::refcellify(
+//!         vec![Foo { prob: 0.25 }, Foo { prob: 0.5 }, Foo { prob: 0.1 }, Foo { prob: 0.05 }]
+//!     ).collect();
+//! 
+//!     let mut rng = rand::thread_rng();    
+//!     dbg!(v.choose_rand(&mut rng));
+//! 
+//!     Ok(())
+//! }
+//! ```
 
 #[warn(missing_docs)]
 
 /// Contains all of the important things from this crate.
 /// When using the crate, you want to do `use choose_rand::prelude::*;`
 pub mod prelude;
+
+/// Adds all the main parts of the crate, including the traits required for the crate to work
 pub mod rand;
+
+/// Contains the error enum for this crate.
 pub mod error;
+
+/// Contains some simple helper functions to make life easier when using this crate.
+pub mod helper;
 
 #[cfg(test)]
 mod tests {
-    use std::cell::RefCell;
 
     use super::prelude::*;
-    //use std::collections::{HashSet, BTreeSet};
+    use super::helper::*;
 
     #[derive(Debug, Clone)]
     struct Foo(f32, Option<String>);
@@ -21,10 +56,6 @@ mod tests {
         fn probability(&self) -> f32 {
             self.0
         }
-    }
-    
-    fn refcellify<T, C: Iterator<Item = T>>(c: C) -> impl Iterator<Item = RefCell<T>> {
-        c.map(|i| RefCell::new(i))
     }
 
     #[test]

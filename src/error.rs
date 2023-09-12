@@ -1,6 +1,4 @@
-/// Simple Error struct that has a String value for whatever reason it errored.
-
-// TODO rewrite as enum
+/// Simple Error returned by possibly failable operations in this crate.
 #[derive(Debug, Clone)]
 pub enum Error {
     ProbabilitySum
