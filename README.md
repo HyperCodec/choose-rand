@@ -22,7 +22,7 @@ use choose_rand::prelude::*;
      ).collect();
  
      let mut rng = rand::thread_rng();    
-     dbg!(v.choose_rand(&mut rng));
+     dbg!(v.choose_rand(&mut rng)?);
  
      Ok(())
  }
@@ -57,7 +57,7 @@ fn main() -> Result<()> {
      ).collect();
  
      let mut rng = rand::thread_rng();    
-     dbg!(v.choose_rand(&mut rng));
+     dbg!(v.choose_rand(&mut rng)?);
  
      Ok(())
  }
