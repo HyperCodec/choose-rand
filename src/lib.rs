@@ -43,6 +43,9 @@ pub mod error;
 /// Contains some simple helper functions to make life easier when using this crate.
 pub mod helper;
 
+#[cfg(all(feature = "normal_float", feature = "eq_float"))]
+compile_error!("`normal_float` and `eq_float` features can not be enabled at the same time");
+
 #[cfg(test)]
 mod tests {
 

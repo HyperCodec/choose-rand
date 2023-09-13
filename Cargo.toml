@@ -11,8 +11,14 @@ description = "A small crate for choosing random items from a set of weighted it
 keywords = ["random", "rng"]
 categories = ["random"]
 
+[features]
+default = ["normal_float"]
+eq_float = []
+normal_float = []
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+eq-float = "0.1.0"
 rand = "0.8.5"
 weighted_rand = "0.4.1" # this kind of defeats the point of the crate but whatever. At least this might be easier to use.
