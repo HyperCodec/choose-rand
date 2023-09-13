@@ -2,11 +2,14 @@ name: Publish
 
 on: [workflow_dispatch]
 
+concurrency: publish
+
 jobs:
     publish:
         runs-on: ubuntu-latest
 
         steps:
+            - uses: actions/checkout@v3
             - name: Login to crates.io
               run: cargo login ${{ secrets.CRATESIO_TOKEN }}
             - name: Publish to crates.io
