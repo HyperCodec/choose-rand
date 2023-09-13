@@ -2,7 +2,7 @@
 A small crate for choosing random items from a set of weighed items.
 
 ### Installation/Setup
-To import the crate into your project, simply run `cargo add choose-rand` or open your Cargo.toml and add `choose-rand = "<latest release>"`
+To import the crate into your project, simply run `cargo add choose-rand`
 
 In any file that you want to use the crate, add `use choose_rand::prelude::*;`.
 
