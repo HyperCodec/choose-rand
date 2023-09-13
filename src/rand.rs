@@ -120,7 +120,7 @@ where
 }
 
 /// Required for `chooe_rand` to work.
-/// Use on any items to be chosen.
+/// Use on any items to be chosen by this crate.
 #[cfg(feature = "normal_float")]
 pub trait Probable {
     /// The probability that this item will be picked.
