@@ -4,7 +4,7 @@ use std::cell::{Ref, RefCell, RefMut};
 use weighted_rand::builder::*;
 
 /// Blanket trait for all indexable collections that contain RefCells of Probable items. Adds `choose_rand` and `choose_rand_mut`.
-#[cfg(feature = "normal_float")]
+#[cfg(not(feature = "eq_float"))]
 pub trait ChooseRand:
     IntoIterator<Item = RefCell<<Self as ChooseRand>::Item>>
     + std::ops::Index<usize, Output = RefCell<<Self as ChooseRand>::Item>>
@@ -121,7 +121,7 @@ where
 
 /// Required for `chooe_rand` to work.
 /// Use on any items to be chosen by this crate.
-#[cfg(feature = "normal_float")]
+#[cfg(not(feature = "eq_float"))]
 pub trait Probable {
     /// The probability that this item will be picked.
     fn probability(&self) -> f32;

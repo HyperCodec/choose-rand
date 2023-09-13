@@ -12,9 +12,8 @@ keywords = ["random", "rng"]
 categories = ["random"]
 
 [features]
-default = ["normal_float"]
+default = []
 eq_float = []
-normal_float = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
