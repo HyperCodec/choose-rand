@@ -8,6 +8,6 @@ jobs:
 
         steps:
             - name: Login to crates.io
-              run: cargo login --api-key ${{ secrets.CARGO_TOKEN }}
+              run: cargo login --api-key ${{ secrets.CRATESIO_TOKEN }}
             - name: Publish to crates.io
               run: cargo publish
