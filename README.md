@@ -1,5 +1,5 @@
 # choose-rand
-A small crate for choosing random items from a set of weighed items.
+A small crate for choosing random items from a set of weighted items.
 
 ### Examples
 ```rust
@@ -22,7 +22,7 @@ use choose_rand::prelude::*;
      ).collect();
  
      let mut rng = rand::thread_rng();    
-     dbg!(v.choose_rand(&mut rng));
+     dbg!(v.choose_rand(&mut rng)?);
  
      Ok(())
  }
@@ -57,7 +57,7 @@ fn main() -> Result<()> {
      ).collect();
  
      let mut rng = rand::thread_rng();    
-     dbg!(v.choose_rand(&mut rng));
+     dbg!(v.choose_rand(&mut rng)?);
  
      Ok(())
  }
