@@ -7,12 +7,17 @@ readme = "README.md"
 authors = ["HyperCodec"]
 homepage = "https://github.com/HyperCodec/choose-rand"
 repository = "https://github.com/HyperCodec/choose-rand"
-description = "A small crate for choosing random items from a set of weighed items."
+description = "A small crate for choosing random items from a set of weighted items."
 keywords = ["random", "rng"]
 categories = ["random"]
+
+[features]
+default = []
+eq_float = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-fastrand = "1.6"
-eq-float = "0.1"
+eq-float = "0.1.0"
+rand = "0.8.5"
+weighted_rand = "0.4.1" # this kind of defeats the point of the crate but whatever. At least this might be easier to use.

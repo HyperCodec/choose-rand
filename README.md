@@ -2,76 +2,71 @@
 A small crate for choosing random items from a set of weighed items.
 
 ### Installation/Setup
-To import the crate into your project, simply run `cargo add choose-rand` or open your Cargo.toml and add `choose-rand = "<latest release>"`
+To import the crate into your project, simply run `cargo add choose-rand`
 
-In any file that you want to use the crate, add `use choose_rand::prelude::*;` and `use eq_float::F64;` (the eq_float part is for when you need to `impl Probable`)
+In any file that you want to use the crate, add `use choose_rand::prelude::*;`.
 
 ### Examples
-1. Enum
 ```rust
 use choose_rand::prelude::*;
-use eq_float::F64;
+ 
+ #[derive(Debug, Clone)]
+ struct Foo {
+     prob: f32,
+ }
+ 
+ impl Probable for Foo {
+     fn probability(&self) -> f32 {
+         self.prob
+     }
+ }
+ 
+ fn main() -> Result<()> {
+     let v: Vec<_> = choose_rand::helper::refcellify(
+         vec![Foo { prob: 0.25 }, Foo { prob: 0.5 }, Foo { prob: 0.1 }, Foo { prob: 0.05 }]
+     ).collect();
+ 
+     let mut rng = rand::thread_rng();    
+     dbg!(v.choose_rand(&mut rng));
+ 
+     Ok(())
+ }
+```
 
-#[derive(Hash, Eq, PartialEq, Clone, Debug)]
-enum Test {
-    foo,
-    bar,
-    buz
+with `features = ["eq_float"]` for sets:
+```rust
+use choose_rand::prelude::*;
+use eq_float::F32;
+use std::collections::HashSet;
+
+#[derive(Clone, Debug, Hash)]
+struct Foo {
+    prob: F32,
 }
 
-impl Probable for Test {
-    fn probability(&self) -> F64 {
-        match self {
-            Test::foo => F64(0.1),
-            Test::bar => F64(0.2),
-            Test::buz => F64(0.7)
-        }
+impl Foo {
+    fn new(prob: f32) -> Self {
+        Self { prob: F32(prob) }
     }
 }
 
-fn main() {
-    // all probabilities must add up to 1 or else it will (sometimes) fail.
-    // it also works with BTreeSet
-    let things = HashSet::from([
-        Test::foo,
-        Test::bar, 
-        Test::buz
-    ]);
-    
-    let chosen = choose_rand(&things).unwrap();
-
-    println!("The chosen one is: {:#?}", chosen);
-}
-```
-
-2. Struct
-```rust
-use choose_rand::prelude::*;
-use eq_float::F64;
-
-#[derive(Hash, Eq, PartialEq, Clone, Debug)]
-struct Test(F64);
-
-impl Probable for Test {
-    fn probability(&self) -> F64 {
-        self.0
+impl Probable for Foo {
+    fn probablity(&self) -> F32 {
+        self.prob
     }
 }
 
-fn main() {
-    // all probabilities must add up to 1 or else it will (sometimes) fail.
-    // it also works with BTreeSet
-    let things = HashSet::from([
-        Test(F64(0.1)),
-        Test(F64(0.2)),
-        Test(F64(0.7))
-    ]);
-
-    let chosen = choose_rand(&things).unwrap();
-
-    println!("The chosen one is: {:#?}", chosen);
-}
+fn main() -> Result<()> {
+     let v: HashSet<_> = choose_rand::helper::refcellify(
+         vec![Foo::new(0.25), Foo::new(0.5), Foo::new(0.1), Foo::new(0.05)]
+     ).collect();
+ 
+     let mut rng = rand::thread_rng();    
+     dbg!(v.choose_rand(&mut rng));
+ 
+     Ok(())
+ }
 ```
 
-### License
+# License
 This library is licensed under the `MIT` license.
