@@ -1,0 +1,13 @@
+name: Publish
+
+on: [workflow_dispatch]
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Login to crates.io
+              run: cargo login --api-key ${{ secrets.CARGO_TOKEN }}
+            - name: Publish to crates.io
+              run: cargo publish
