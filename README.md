@@ -52,12 +52,12 @@ impl Probable for Foo {
 }
 
 fn main() -> Result<()> {
-     let v: HashSet<_> = choose_rand::helper::refcellify(
+     let s: HashSet<_> = choose_rand::helper::refcellify(
          vec![Foo::new(0.25), Foo::new(0.5), Foo::new(0.1), Foo::new(0.05)]
      ).collect();
  
      let mut rng = rand::thread_rng();    
-     dbg!(v.choose_rand(&mut rng)?);
+     dbg!(s.choose_rand(&mut rng)?);
  
      Ok(())
  }
